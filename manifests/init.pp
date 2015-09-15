@@ -1,6 +1,6 @@
 class accounts (
   $users2add  = ['greg','greg2'],
-  $group2add  = ['neoadmins']
+  $group2add  = ['superadmins']
 )  {
 
 define ceateaccount {
