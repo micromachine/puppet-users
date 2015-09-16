@@ -1,11 +1,12 @@
 class accounts (
   $users2add  = ['greg','greg2'],
-  $group2add  = 'superadmins'
+  $group2add  = 'superadmins',
+  $homepath = '/home'
 )  {
 
-define ceateaccount($group) {
+define ceateaccount($group,$hpath) {
 
-  file { "/home/$name":
+  file { "${hpath}/${name}":
     ensure => directory,
     mode   => 0750,
   }
@@ -14,10 +15,18 @@ define ceateaccount($group) {
     ensure => "present",
   } 
 
+  file { "${hpath}/${name}/.ssh":
+    ensure            =>  directory,
+    owner             =>  $name,
+    group             =>  $name,
+    mode              =>  '0700',
+    require           =>  File["${hpath}/${name}"],
+  }
+
 
   user { $name:
     ensure => present,
-    home   =>  "/home/${name}",
+    home   =>  "${hpath}/${name}",
     managehome =>  true,
     groups => [$name,$group],
     require    => Group[$group],
@@ -31,6 +40,7 @@ group { $group2add:
 
 ceateaccount {$users2add:
 	group => $group2add,
+        hpath => $homepath,
 		}
 
 }
