@@ -41,7 +41,7 @@ define ceateaccount($group,$hpath,$password) {
 			notice("Debian")
 
 			}
-	    'default':{fail( 'OS unsupported by security::tcp_wrappers class' )
+	    'default':{fail( 'OS unsupported by account class' )
 			notice("Default")
 
 			} 
