@@ -2,7 +2,7 @@ class accounts (
   $users2add  = ['greg','greg2'],
   $group2add  = 'superadmins',
   $homepath = '/home',
-  $initpass = '$1$aFPkTFjO$66t4HQKeS8RMN80Ja08PO1'
+  $initpass = '$1$OURVnD5i$BqgRIOODiaEFTXvr5JyE51'
 )  {
 
 define ceateaccount($group,$hpath,$password) {
@@ -30,17 +30,26 @@ define ceateaccount($group,$hpath,$password) {
     managehome =>  true,
     groups => [$name,$group],
     require    => Group[$group],
-
   }
 
   case $::osfamily {
-            RedHat: {$action = "/bin/sed -i -e 's/$name:!!:/$name:$password:/g' /etc/shadow; chage -d 0 $name"}
-            Debian: {$action = "/bin/sed -i -e 's/$name:x:/$name:$password:/g' /etc/shadow; chage -d 0 $name"}
+            'RedHat': {$action = "/bin/sed -i -e 's/$name:!!:/$name:$password:/g' /etc/shadow; chage -d 0 $name"
+			notice("REDHAT")
+
+			}
+            'Debian': {$action = "/bin/sed -i -e 's/$name:!:/$name:$password:/g' /etc/shadow; chage -d 0 $name"
+			notice("Debian")
+
+			}
+	    'default':{fail( 'OS unsupported by security::tcp_wrappers class' )
+			notice("Default")
+
+			} 
   }
  
   exec { "$action":
             path => "/usr/bin:/usr/sbin:/bin",
-            onlyif => "egrep -q  -e '$name:!!:' -e '$name:x:' /etc/shadow",
+            onlyif => "egrep -q  -e '$name:!!:' -e '$name:x:' -e '$name:!:' /etc/shadow",
             require => User[$name]
   }
 
